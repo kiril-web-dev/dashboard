@@ -61,7 +61,7 @@
             });
 
         },
-        
+
         initEditMode: function () {
 
             var self = this;
@@ -109,10 +109,8 @@
                         .css('display', 'none')
                         .appendTo(self.$gridRoot)
                         .gridstack(self.settings.grid);
-                
+
                 var grid = this.$grid.data('gridstack');
-                
-                console.log(grid)
 
                 $.each(this.widgets, function (idx, widget) {
                     
@@ -132,7 +130,7 @@
                         
                         alert('Call App ID: ' + id);
                         
-                    });    
+                    });
 
                     $('<div class="grid-stack-item-content">')
                         .append($iframe)

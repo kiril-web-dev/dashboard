@@ -31,16 +31,18 @@
         <script>
 
             $(function () {
+
                 $('#dashboard').dashboard({
                     apiUrl: 'http://localhost:3333/dashboard/'
                 });
-            });
 
-            $('.sidebar .grid-stack-item').draggable({
-                revert: 'invalid',
-                handle: '.grid-stack-item-content',
-                scroll: false,
-                appendTo: 'body'
+                $('.sidebar .grid-stack-item').draggable({
+                    revert: 'invalid',
+                    handle: '.grid-stack-item-content',
+                    scroll: false,
+                    appendTo: 'body'
+                });
+
             });
 
         </script>

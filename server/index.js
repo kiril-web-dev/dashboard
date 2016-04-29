@@ -1,3 +1,4 @@
+// Dashboard
 var express = require('express');
 var app = express();
 
@@ -16,8 +17,19 @@ app.get('/dashboard/default', function (req, res) {
 	res.json(require('./mock_data/default.json'));
 });
 
+// return widgets content
 app.get('/dashboard/widgets/:id', function (req, res) {
 	res.send('Widget ' + req.params.id + ' content!');
+});
+
+// return widgets settings content
+app.get('/dashboard/settings/:id', function (req, res) {
+	res.send('Widget ' + req.params.id + ' settings!');
+});
+
+// return app content
+app.get('/dashboard/app/:id', function (req, res) {
+	res.send('App ' + req.params.id + ' content!');
 });
 
 app.listen(3333, function () {
