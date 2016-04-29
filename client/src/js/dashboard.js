@@ -6,7 +6,7 @@
         defaults = {
             grid: {
                 disableResize: true,
-                staticGrid: true,
+                //staticGrid: true,
                 cellHeight: 300,
                 verticalMargin: 20,
                 acceptWidgets: '.grid-stack-item'
@@ -73,15 +73,21 @@
                 self._editMode = $(this).is(':checked');
 
                 $.each(self._configurations, function() {
+
                     if (self._editMode) {
-                        this.$grid.data('gridstack').enable();
                         self.$gridLayout.addClass('edit-mode');
                         $addWidget.show();
                     } else {
-                        this.$grid.data('gridstack').disable();
                         self.$gridLayout.removeClass('edit-mode');
                         $addWidget.hide();
                     }
+
+                    var grid = this.$grid.data('gridstack');
+
+                    $.each(this.widgets, function (idx, widget) {
+                        grid.movable(widget.$widget, !widget.locked);
+                    });
+
                 });
 
             });
@@ -141,7 +147,7 @@
                     var width = widget.width * self.settings.cellWidth;
                     var $wrapper = $('<div>')
                     var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" name="widget_' + id + '" id="widget_' + id + '" scrolling="no"></iframe>')
-                    var $hover = $('<div class="widget-hover">').click(function () {
+                    var $hover = $('<div class="widget-hover">').mouseup(function () {
                         
                         if (self._editMode) {
                             return;
@@ -153,20 +159,33 @@
                         
                         alert('Call App ID: ' + id);
                         
+                        window.location.hash = widget.url;
+                        
                     });
+                    var $title = $('<div class="widget-title">' + widget.name + '</div>');
                     var $close = $('<div class="widget-remove">remove</div>').click(function () {
                         
                         alert('Remove Widget ID:' + id);
                         
                     });
+                    
+                    if (widget.refresh) {
+                        setInterval(function () {
+                            $iframe.attr('src', $iframe.attr('src'));
+                        }, widget.refresh * 1000);
+                    }
 
                     $('<div class="grid-stack-item-content">')
                         .append($iframe)
                         .append($hover)
+                        .append($title)
                         .append($close)
                         .appendTo($wrapper);                        
 
                     grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
+                    widget.$widget = $wrapper;
+                    
+                    grid.movable($wrapper, false);
 
                 });
 

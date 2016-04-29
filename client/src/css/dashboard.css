@@ -10,6 +10,12 @@ body {
     width: 100%;
     padding: 10px;
 }
+.panel-top-bg {
+    z-index: 32;
+    height: 45px;
+    background: white;
+    opacity: .7;
+}
 
 .panel-add {
     display: none;
@@ -44,6 +50,15 @@ body {
 
 .edit-mode .grid-stack-item-content .widget-hover {
     cursor: move;
+}
+
+.grid-stack-item-content .widget-title {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    padding: 8px;
+    font-size: 18px;
 }
 
 .grid-stack-item-content .widget-remove {
