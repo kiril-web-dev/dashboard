@@ -85,6 +85,7 @@
                     var grid = this.$grid.data('gridstack');
 
                     $.each(this.widgets, function (idx, widget) {
+                        grid.locked(widget.$widget, widget.locked);
                         grid.movable(widget.$widget, !widget.locked);
                     });
 
