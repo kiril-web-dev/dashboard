@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Dashboard</title>
+        <link rel="stylesheet" type="text/css" href="../src/css/vendors.css">
+        <link rel="stylesheet" type="text/css" href="../src/css/dashboard.css">
+    </head>
+    <body>
+        
+        <div class="panel_edit">
+            <input id="editMode" type="checkbox">
+            <label for="editMode">Edit mode</label>
+        </div>
+
+        <div class="container-fluid">
+            <div id='dashboard'></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="sidebar">
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET</div></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="../src/js/vendors.js"></script>
+        <script src="../src/js/dashboard.js"></script>
+
+        <script>
+
+            $(function () {
+                $('#dashboard').dashboard({
+                    apiUrl: 'http://localhost:3333/dashboard/'
+                });
+            });
+
+            $('.sidebar .grid-stack-item').draggable({
+                revert: 'invalid',
+                handle: '.grid-stack-item-content',
+                scroll: false,
+                appendTo: 'body'
+            });
+
+        </script>
+
+    </body>
+</html>
