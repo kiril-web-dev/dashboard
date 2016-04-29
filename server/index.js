@@ -19,7 +19,8 @@ app.get('/dashboard/default', function (req, res) {
 
 // return widgets content
 app.get('/dashboard/widgets/:id', function (req, res) {
-	res.send('Widget ' + req.params.id + ' content!');
+	var id = 'Widget ID: ' + req.params.id + '<br>';
+	res.send(id + require('fs').readFileSync('./mock_data/widget.html', 'utf8'));
 });
 
 // return widgets settings content

@@ -8,7 +8,7 @@
                 disableResize: true,
                 staticGrid: true,
                 cellHeight: 300,
-                verticalMargin: 0,
+                verticalMargin: 20,
                 acceptWidgets: '.grid-stack-item'
             },
             viewports: {
@@ -49,6 +49,7 @@
 
             self.buildGridLayout();
             self.initEditMode();
+            self.initStyles();
             
             if (!self.settings.apiUrl) {
                 throw new Error('Undefined API URL');
@@ -65,6 +66,7 @@
         initEditMode: function () {
 
             var self = this;
+            var $addWidget = $('.panel-add');
 
             $('#editMode').change(function () {
 
@@ -74,14 +76,35 @@
                     if (self._editMode) {
                         this.$grid.data('gridstack').enable();
                         self.$gridLayout.addClass('edit-mode');
+                        $addWidget.show();
                     } else {
                         this.$grid.data('gridstack').disable();
                         self.$gridLayout.removeClass('edit-mode');
+                        $addWidget.hide();
                     }
                 });
 
             });
 
+        },
+        
+        initStyles: function () {
+            
+            var themes = '../src/css/themes/';
+            
+            $('.theme').change(function () {
+                $('#theme').attr('href', themes + 'theme_' + this.value + '.css');
+            });
+            
+            $('.background').change(function () {
+                var value = parseInt(this.value);
+                var background = 'none';
+                if (value > 0) {
+                    background = 'url(' + themes + 'backgrounds/background_' + value + '.jpg)';
+                }
+                $('body').css('background-image', background);
+            });
+            
         },
 
         buildGridLayout: function() {
@@ -116,9 +139,9 @@
                     
                     var id = widget.id;
                     var width = widget.width * self.settings.cellWidth;
-                    var $wrapper = $('<div>').css({ width: width, minWidth: 0 })
+                    var $wrapper = $('<div>')
                     var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" name="widget_' + id + '" id="widget_' + id + '" scrolling="no"></iframe>')
-                    var $iframe_hover = $('<div class="iframe_hover" title="' + widget.name + '">').click(function(){
+                    var $hover = $('<div class="widget-hover">').click(function () {
                         
                         if (self._editMode) {
                             return;
@@ -131,10 +154,16 @@
                         alert('Call App ID: ' + id);
                         
                     });
+                    var $close = $('<div class="widget-remove">remove</div>').click(function () {
+                        
+                        alert('Remove Widget ID:' + id);
+                        
+                    });
 
                     $('<div class="grid-stack-item-content">')
                         .append($iframe)
-                        .append($iframe_hover)
+                        .append($hover)
+                        .append($close)
                         .appendTo($wrapper);                        
 
                     grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);

@@ -5,24 +5,38 @@
         <title>Dashboard</title>
         <link rel="stylesheet" type="text/css" href="../src/css/vendors.css">
         <link rel="stylesheet" type="text/css" href="../src/css/dashboard.css">
+        <link rel="stylesheet" type="text/css" id="theme" href="../src/css/themes/theme_1.css">
     </head>
     <body>
-        
-        <div class="panel_edit">
+
+        <div class="panel-top">
+            
+            Dashboard:
             <input id="editMode" type="checkbox">
             <label for="editMode">Edit mode</label>
+
+            Theme:
+            <input type="radio" name="theme" class="theme" value="1" checked="checked">
+            <input type="radio" name="theme" class="theme" value="2">
+            <input type="radio" name="theme" class="theme" value="3">
+
+            Background:
+            <input type="radio" name="background" class="background" value="0" checked="checked">
+            <input type="radio" name="background" class="background" value="1">
+            <input type="radio" name="background" class="background" value="2">
+
         </div>
 
-        <div class="container-fluid">
-            <div id='dashboard'></div>
-        </div>
-
-        <div class="row">
+        <div class="panel-add row">
             <div class="col-md-12">
                 <div class="sidebar">
                     <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET</div></div>
                 </div>
             </div>
+        </div>
+
+        <div class="container-fluid">
+            <div id='dashboard'></div>
         </div>
 
         <script src="../src/js/vendors.js"></script>
