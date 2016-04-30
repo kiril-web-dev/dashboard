@@ -1,7 +1,13 @@
-<div id="counter">0</div>
+
+<style>
+	p { background: silver; }
+</style>
+
+<p id="counter">0</p>
+
 <script>
-    setInterval(function () {
-        var counter = document.getElementById('counter');
-        counter.innerHTML = parseInt(counter.innerHTML) + 1;
-    }, 1000);
+	setInterval(function () {
+		var counter = document.getElementById('counter');
+		counter.innerHTML = parseInt(counter.innerHTML) + 1;
+	}, 1001);
 </script>

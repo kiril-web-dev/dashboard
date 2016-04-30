@@ -6,7 +6,6 @@
         defaults = {
             grid: {
                 disableResize: true,
-                //staticGrid: true,
                 cellHeight: 300,
                 verticalMargin: 20,
                 acceptWidgets: '.grid-stack-item'
@@ -54,12 +53,63 @@
             if (!self.settings.apiUrl) {
                 throw new Error('Undefined API URL');
             }
-
-            $.get(self.settings.apiUrl + 'default', function (response) {
-                self.setConfigurations(response);  
-                self.showPropperConfiguration()
-                self.listenForResolutionChange();
+            
+            var profile = new self.profile(self);
+            
+            profile.check().done(function (check) {
+                
+                if (check.login) {
+                    profile.show('logout');
+                } else {
+                    profile.show('login');
+                }
+                
+                $.get(self.settings.apiUrl + 'default', function (response) {
+                    self.setConfigurations(response);  
+                    self.showPropperConfiguration()
+                    self.listenForResolutionChange();
+                });
+                
             });
+
+        },
+        
+        profile: function (self) {
+            
+            var $profileLogIn = $('#profileLogIn').click(function(){ login(true); });
+            var $profileLogOut = $('#profileLogOut').click(function(){ login(false); });
+            
+            function check(){
+                return $.get(self.settings.apiUrl + 'profile/check');
+            }
+            
+            function show(target){
+                if (target === 'login') {
+                    $profileLogOut.hide();
+                    $profileLogIn.show();
+                } else {
+                    $profileLogIn.hide();
+                    $profileLogOut.show();
+                }
+            }
+            
+            function login(type){
+
+                var type = type ? 'in' : 'out';
+
+                $.post(self.settings.apiUrl + 'profile/log' + type, {}, function (response) {
+                    if (response.login) {
+                        show('logout');
+                    } else {
+                        show('login');
+                    }
+                });
+            }
+            
+            return {
+                check: check,
+                show: show
+            };
 
         },
 
@@ -98,9 +148,13 @@
         initStyles: function () {
             
             var themes = '../src/css/themes/';
+            var fonts = { 1: 'Raleway', 2: 'Oswald', 3: 'Indie+Flower' };
+            var fontsUrl = 'https://fonts.googleapis.com/css?family=';
             
             $('.theme').change(function () {
                 $('#theme').attr('href', themes + 'theme_' + this.value + '.css');
+                console.log('fonts[this.value]', fontsUrl + fonts[this.value]);
+                $('#font').attr('href', fontsUrl + fonts[this.value]);
             });
             
             $('.background').change(function () {
@@ -114,7 +168,7 @@
             
         },
 
-        buildGridLayout: function() {
+        buildGridLayout: function () {
             var $mount = $(this.element);
             this.$gridLayout = $('<div id="grid-layout">');
             this.$gridRoot = $('<div>');
@@ -146,8 +200,8 @@
                     
                     var id = widget.id;
                     var width = widget.width * self.settings.cellWidth;
-                    var $wrapper = $('<div>')
-                    var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" name="widget_' + id + '" id="widget_' + id + '" scrolling="no"></iframe>')
+                    var $wrapper = $('<div>');
+                    var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
                     var $hover = $('<div class="widget-hover">').mouseup(function () {
                         
                         if (self._editMode) {
@@ -171,7 +225,7 @@
                     });
                     
                     if (widget.refresh) {
-                        setInterval(function () {
+                        widget.refresh = setInterval(function () {
                             $iframe.attr('src', $iframe.attr('src'));
                         }, widget.refresh * 1000);
                     }

@@ -16,6 +16,10 @@ body {
     background: white;
     opacity: .7;
 }
+.panel-top .panel-profile {
+    display: none;
+    float: right;
+}
 
 .panel-add {
     display: none;
@@ -63,6 +67,7 @@ body {
     left: 0;
     padding: 8px;
     font-size: 18px;
+    font-weight: bold;
 }
 
 .grid-stack-item-content .widget-remove {
