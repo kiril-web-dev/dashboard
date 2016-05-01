@@ -11,10 +11,10 @@
                 acceptWidgets: '.grid-stack-item'
             },
             viewports: {
-                viewport_1: { stack: 1, range: { to: 600 } },
+                viewport_1: { stack: 1, range: { from: 0, to: 600 } },
                 viewport_2: { stack: 2, range: { from: 600, to: 1200 } },
                 viewport_3: { stack: 4, range: { from: 1200, to: 1500 } },
-                viewport_4: { stack: 5, range: { from: 1500 } }
+                viewport_4: { stack: 5, range: { from: 1500, to: 9999 } }
             },
             apiUrl: null,
             cellWidth: 300,
@@ -32,7 +32,7 @@
         this._hasConfig = false;
         this._configurations = {};
         //after init props..
-        this._currentResolution = null;
+        this._currentViewport = null;
         //current gridster instance
         this._grid = null;
         this._editMode = false;
@@ -47,6 +47,7 @@
             var self = this;
 
             self.buildGridLayout();
+            self.buildAvailableWidgetsMenu();
             self.initEditMode();
             self.initStyles();
 
@@ -65,8 +66,8 @@
                 }
 
                 $.get(self.settings.apiUrl + 'default', function (response) {
-                    self.setConfigurations(response);  
-                    self.showPropperConfiguration()
+                    self._configurations = response;
+                    self.initProperGridForViewport();
                     self.listenForResolutionChange();
                     self.checkHash();
                 });
@@ -148,11 +149,9 @@
                         $addWidget.hide();
                     }
 
-                    var grid = this.$grid.data('gridstack');
-
                     $.each(this.widgets, function (idx, widget) {
-                        grid.locked(widget.$widget, widget.locked);
-                        grid.movable(widget.$widget, !widget.locked);
+                        self._grid.locked(widget.$widget, widget.locked);
+                        self._grid.movable(widget.$widget, !widget.locked);
                     });
 
                 });
@@ -192,6 +191,112 @@
             this.$gridRoot.appendTo(this.$gridLayout);
             this.$gridLayout.appendTo($mount);
             return this.$gridRoot;
+        },
+
+        buildAvailableWidgetsMenu: function () {
+            var $menu = $('<div>');
+            $menu.attr('id','available-widgets-menu');
+
+            var $menuWrapper = $('<div>');
+            $menuWrapper.attr('id','available-widgets-menu-wrapper');
+            
+            var $menuButton = $('<button/>');
+            $menuButton.attr('id','available-widgets-menu-btn');
+
+            $menuWrapper.append($menu);
+            this.$gridLayout.append($menuWrapper);
+            this.$gridLayout.append($menuButton);
+        },
+
+        setGridConfiguration: function (config) {
+            var self = this;
+
+             $.each(config.widgets, function (idx, widget) {
+
+                    var id = widget.id;
+                    var width = widget.width * self.settings.cellWidth;
+                    var $wrapper = $('<div>');
+                    var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
+                    var $hover = $('<div id="' + widget.url + '_widget" class="widget-hover">').mouseup(function () {
+
+                        if (self._editMode) {
+                            return;
+                        }
+
+                        if (widget.settings) {
+                            alert('Open Widget Settigs Dialog: ' + self.settings.apiUrl + 'settings/' + id);
+                        }
+
+                        alert('Call App ID: ' + id);
+
+                        window.location.hash = widget.url;
+
+                    });
+                    var $title = $('<div class="widget-title">' + widget.name + '</div>');
+                    var $close = $('<div class="widget-remove">remove</div>').click(function () {
+
+                        alert('Remove Widget ID:' + id);
+
+                        window.location.hash = '';
+
+                    });
+                    
+                    if (widget.refresh) {
+                        widget.refresh = setInterval(function () {
+                            $iframe.attr('src', $iframe.attr('src'));
+                        }, widget.refresh * 1000);
+                    }
+
+                    $('<div class="grid-stack-item-content">')
+                        .append($iframe)
+                        .append($hover)
+                        .append($title)
+                        .append($close)
+                        .appendTo($wrapper);                        
+
+                    self._grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
+                    widget.$widget = $wrapper;
+                    
+                    self._grid.movable($wrapper, false);
+
+                });
+        },
+
+        initProperGridForViewport: function () {
+            var self = this;
+            var width = $(window).width();
+
+            var properViewport = Object.keys(self.settings.viewports).filter(function (key) {
+                var vp = self.settings.viewports[key];
+                return width > vp.range.from && width <= vp.range.to
+            });
+
+            var viewportConfig = self.settings.viewports[properViewport];
+
+            //dont reinit current
+            if (self._currentViewport && viewportConfig.stack === self._currentViewport.stack) return;
+
+            self._currentViewport = viewportConfig;
+
+            //if currently set grid => remove it
+            if (self._grid) self._grid.destroy();
+
+            //rm children
+            self.$gridRoot.empty();
+
+            var properGridSettings = self.settings.grid;
+            //important to set this in order to prevent overlapping.
+            properGridSettings.width = self._currentViewport.stack;
+
+            self.$grid =
+                    $('<div class="grid-stack grid-stack-' + self._currentViewport.stack + '">')
+                        .appendTo(self.$gridRoot)
+                        .gridstack(properGridSettings);
+
+            self._grid = this.$grid.data('gridstack');
+
+            self.setGridConfiguration(self._configurations[properViewport]);
+            debugger;
         },
 
         setConfigurations: function (data) {
@@ -268,32 +373,8 @@
 
         listenForResolutionChange: function () {
             var self = this;
-            $(window).resize(_.throttle(self.showPropperConfiguration.bind(self), self.settings.throttleInterval));
+            $(window).resize(_.throttle(self.initProperGridForViewport.bind(self), self.settings.throttleInterval));
         },
-
-        showPropperConfiguration: function () {
-
-            var self = this;
-            var width = $(window).width();
-
-            $.each(self._configurations, function(key) {
-
-                var range = this.range || self.settings.viewports[key].range;
-                var check = {
-                    from: width > (range.from || 0),
-                    to: range.to ? width <= range.to : true
-                };
-
-                if (check.from && check.to) {
-                    self.$gridRoot.css('width', range.from || self.settings.cellWidth);
-                    this.$grid.css('display', 'block');
-                } else {
-                    this.$grid.css('display', 'none');
-                }
-
-            });
-
-        }
 
     });
 
