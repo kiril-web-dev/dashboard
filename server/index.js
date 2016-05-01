@@ -10,6 +10,11 @@ app.use(cors());
 app.use(express.static(__dirname + '/../client/src'));
 app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
 
+// available widgets
+app.get('/dashboard/availableWidgets', function (req, res) {
+	res.json(require('./mock_data/availableWidgets.json'))
+})
+
 // return default configuration
 app.get('/dashboard/default', function (req, res) {
 	res.json(require('./mock_data/default.json'));

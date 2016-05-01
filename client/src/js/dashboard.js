@@ -194,14 +194,17 @@
         },
 
         buildAvailableWidgetsMenu: function () {
-            var $menu = $('<div>');
+            var $menu = $('<ul>');
             $menu.attr('id','available-widgets-menu');
 
             var $menuWrapper = $('<div>');
             $menuWrapper.attr('id','available-widgets-menu-wrapper');
-            
+
             var $menuButton = $('<button/>');
             $menuButton.attr('id','available-widgets-menu-btn');
+            $menuButton.click(function () {
+                $menuWrapper.toggle();
+            })
 
             $menuWrapper.append($menu);
             this.$gridLayout.append($menuWrapper);
