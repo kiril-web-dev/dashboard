@@ -1,16 +1,11 @@
 // Dashboard
-var express = require('express');
-var app = express();
+var
+	express = require('express'),
+	session = require('express-session'),
+	app = express();
 
-// allow all cross-origin requests
-app.all('/*', function(req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
-	next();
-});
-
-app.all('/', function (req, res) {
-	res.send('Dashboard API');
-});
+app.use(express.static(__dirname + '/../client'));
+app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
 
 // return default configuration
 app.get('/dashboard/default', function (req, res) {
@@ -23,7 +18,7 @@ app.get('/dashboard/widgets/:id', function (req, res) {
 	res.send(id + require('fs').readFileSync('./mock_data/widget.html', 'utf8'));
 });
 
-// return widgets settings content
+// return settings content
 app.get('/dashboard/settings/:id', function (req, res) {
 	res.send('Widget ' + req.params.id + ' settings!');
 });
@@ -33,6 +28,23 @@ app.get('/dashboard/app/:id', function (req, res) {
 	res.send('App ' + req.params.id + ' content!');
 });
 
+// profile check
+app.get('/dashboard/profile/check', function (req, res) {
+	res.json({ login: req.session.login });
+});
+
+// login
+app.post('/dashboard/profile/login', function (req, res) {
+	req.session.login = true;
+	res.json({ login: true });
+});
+
+// logout
+app.post('/dashboard/profile/logout', function (req, res) {
+	req.session.login = false;
+	res.json({ login: false });
+});
+
 app.listen(3333, function () {
-	console.log('Dashboard API available on port 3333');
+	console.log('\nDashboard Server\n');
 });
