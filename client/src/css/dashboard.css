@@ -85,6 +85,16 @@ body {
 }
 
 /* WIDGETS MENU */
+#available-widgets-menu-wrapper {
+    display: none;
+    position: fixed;
+    height: 100%;
+    /*menu height*/
+    top: 45px;
+    right: 1px;
+    width: 200px;
+    background: #fff;
+}
 
 #available-widgets-menu-btn {
     width: 30px;
@@ -101,15 +111,16 @@ body {
     list-style-type: none;
 }
 
-#available-widgets-menu-wrapper {
-    display: none;
-    position: fixed;
-    height: 100%;
-    top: 1px;
-    right: 1px;
-    width: 200px;
-    background: orange;
+.widget-info {
+    height: 300px;
+    background: blue;
 }
+
+.widget-clone {
+    opacity: 0.5;
+    background: #fff;
+}
+
 
 /* END WIDGETS MENU */
 

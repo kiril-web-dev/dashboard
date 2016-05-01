@@ -55,6 +55,10 @@
                 throw new Error('Undefined API URL');
             }
 
+            $.get(self.settings.apiUrl + 'availableWidgets', function (data) {
+                self.populateAvailableWidgetsMenu(data.widgets);
+            })
+
             var profile = new self.profile({ apiUrl: self.settings.apiUrl });
 
             profile.check().done(function (check) {
@@ -193,9 +197,29 @@
             return this.$gridRoot;
         },
 
+        populateAvailableWidgetsMenu: function (widgets) {
+            widgets.forEach(function (widget) {
+                var widgetInfo = $('<li>');
+                widgetInfo.addClass('widget-info ');
+
+                widgetInfo.draggable({
+                    start: function(e, ui) {
+                        $(this).height(widget.height * 300);
+                        $(this).width(widget.width * 300);
+                        $(this).removeClass('widget-info');
+                        $(this).addClass('widget-clone');
+                        $(this).append($(ui.draggable).clone());
+
+                    }
+                });
+                self.$availableWidgetsMenu.append(widgetInfo);
+            })
+        },
+
         buildAvailableWidgetsMenu: function () {
             var $menu = $('<ul>');
             $menu.attr('id','available-widgets-menu');
+            self.$availableWidgetsMenu = $menu;
 
             var $menuWrapper = $('<div>');
             $menuWrapper.attr('id','available-widgets-menu-wrapper');

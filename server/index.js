@@ -12,8 +12,8 @@ app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
 
 // available widgets
 app.get('/dashboard/availableWidgets', function (req, res) {
-	res.json(require('./mock_data/availableWidgets.json'))
-})
+	res.json(require('./mock_data/availableWidgets.json'));
+});
 
 // return default configuration
 app.get('/dashboard/default', function (req, res) {
