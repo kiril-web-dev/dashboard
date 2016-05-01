@@ -54,7 +54,7 @@
                 throw new Error('Undefined API URL');
             }
             
-            var profile = new self.profile(self);
+            var profile = new self.profile({ apiUrl: self.settings.apiUrl });
             
             profile.check().done(function (check) {
                 
@@ -74,13 +74,13 @@
 
         },
         
-        profile: function (self) {
+        profile: function (settings) {
             
             var $profileLogIn = $('#profileLogIn').click(function(){ login(true); });
             var $profileLogOut = $('#profileLogOut').click(function(){ login(false); });
             
             function check(){
-                return $.get(self.settings.apiUrl + 'profile/check');
+                return $.get(settings.apiUrl + 'profile/check');
             }
             
             function show(target){
@@ -97,7 +97,7 @@
 
                 var type = type ? 'in' : 'out';
 
-                $.post(self.settings.apiUrl + 'profile/log' + type, {}, function (response) {
+                $.post(settings.apiUrl + 'profile/log' + type, {}, function (response) {
                     if (response.login) {
                         show('logout');
                     } else {
@@ -147,7 +147,7 @@
         
         initStyles: function () {
             
-            var themes = '../src/css/themes/';
+            var themes = '/css/themes/';
             var fonts = { 1: 'Raleway', 2: 'Oswald', 3: 'Indie+Flower' };
             var fontsUrl = 'https://fonts.googleapis.com/css?family=';
             

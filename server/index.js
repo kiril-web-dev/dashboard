@@ -3,7 +3,12 @@ var express = require('express');
 var session = require('express-session');
 var app = express();
 
-app.use(session({ secret: 'dashboard', cookie: { maxAge: 60000 } }));
+app.set('port', process.env.PORT || 3333);
+
+app.use(express.static(__dirname + '/../client/src'));
+
+// session
+app.use(session({ secret: 'dashboard', resave: true, saveUninitialized: true }));
 
 // allow all cross-origin requests
 app.all('/*', function(req, res, next) {
@@ -56,6 +61,6 @@ app.post('/dashboard/profile/logout', function (req, res) {
 	res.json({ login: false });
 });
 
-app.listen(3333, function () {
-	console.log('Dashboard API available on port 3333');
+app.listen(app.get('port'), function () {
+	console.log('\nDashboard API available on port ' + app.get('port') + '\n');
 });
