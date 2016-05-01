@@ -1,8 +1,11 @@
 // Dashboard
 var
 	express = require('express'),
+	cors = require('cors'),
 	session = require('express-session'),
 	app = express();
+
+app.use(cors());	
 
 app.use(express.static(__dirname + '/../client/src'));
 app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
