@@ -1,24 +1,11 @@
 // Dashboard
-var express = require('express');
-var session = require('express-session');
-var app = express();
-
-app.set('port', process.env.PORT || 3333);
+var
+	express = require('express'),
+	session = require('express-session'),
+	app = express();
 
 app.use(express.static(__dirname + '/../client/src'));
-
-// session
-app.use(session({ secret: 'dashboard', resave: true, saveUninitialized: true }));
-
-// allow all cross-origin requests
-app.all('/*', function(req, res, next) {
-	res.header('Access-Control-Allow-Origin', '*');
-	next();
-});
-
-app.all('/', function (req, res) {
-	res.send('Dashboard API');
-});
+app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
 
 // return default configuration
 app.get('/dashboard/default', function (req, res) {
@@ -31,7 +18,7 @@ app.get('/dashboard/widgets/:id', function (req, res) {
 	res.send(id + require('fs').readFileSync('./mock_data/widget.html', 'utf8'));
 });
 
-// return widgets settings content
+// return settings content
 app.get('/dashboard/settings/:id', function (req, res) {
 	res.send('Widget ' + req.params.id + ' settings!');
 });
@@ -47,20 +34,18 @@ app.get('/dashboard/profile/check', function (req, res) {
 	res.json({ login: req.session.login });
 });
 
-// profile login
+// login
 app.post('/dashboard/profile/login', function (req, res) {
 	req.session.login = true;
-	console.log('login req.session', req.session.login);
 	res.json({ login: true });
 });
 
-// profile logout
+// logout
 app.post('/dashboard/profile/logout', function (req, res) {
 	req.session.login = false;
-	console.log('logout req.session', req.session.login);
 	res.json({ login: false });
 });
 
-app.listen(app.get('port'), function () {
-	console.log('\nDashboard API available on port ' + app.get('port') + '\n');
+app.listen(3333, function () {
+	console.log('\nDashboard Server Available\n');
 });

@@ -49,40 +49,41 @@
             self.buildGridLayout();
             self.initEditMode();
             self.initStyles();
-            
+
             if (!self.settings.apiUrl) {
                 throw new Error('Undefined API URL');
             }
-            
+
             var profile = new self.profile({ apiUrl: self.settings.apiUrl });
-            
+
             profile.check().done(function (check) {
-                
+
                 if (check.login) {
                     profile.show('logout');
                 } else {
                     profile.show('login');
                 }
-                
+
                 $.get(self.settings.apiUrl + 'default', function (response) {
                     self.setConfigurations(response);  
                     self.showPropperConfiguration()
                     self.listenForResolutionChange();
+                    self.checkHash();
                 });
-                
+
             });
 
         },
         
         profile: function (settings) {
-            
-            var $profileLogIn = $('#profileLogIn').click(function(){ login(true); });
-            var $profileLogOut = $('#profileLogOut').click(function(){ login(false); });
-            
+
+            var $profileLogIn = $('#profileLogIn').click(function(){ return login(true); });
+            var $profileLogOut = $('#profileLogOut').click(function(){ return login(false); });
+
             function check(){
                 return $.get(settings.apiUrl + 'profile/check');
             }
-            
+
             function show(target){
                 if (target === 'login') {
                     $profileLogOut.hide();
@@ -92,7 +93,7 @@
                     $profileLogOut.show();
                 }
             }
-            
+
             function login(type){
 
                 var type = type ? 'in' : 'out';
@@ -104,12 +105,27 @@
                         show('login');
                     }
                 });
+
+                return false;
+
             }
             
             return {
                 check: check,
                 show: show
             };
+
+        },
+
+        checkHash: function () {
+
+            var hash = window.location.hash;
+
+            if (hash === '') {
+                return;
+            }
+
+            $(hash + '_widget').mouseup();
 
         },
 
@@ -146,17 +162,17 @@
         },
         
         initStyles: function () {
-            
+
             var themes = '/css/themes/';
             var fonts = { 1: 'Raleway', 2: 'Oswald', 3: 'Indie+Flower' };
             var fontsUrl = 'https://fonts.googleapis.com/css?family=';
-            
+
             $('.theme').change(function () {
                 $('#theme').attr('href', themes + 'theme_' + this.value + '.css');
                 console.log('fonts[this.value]', fontsUrl + fonts[this.value]);
                 $('#font').attr('href', fontsUrl + fonts[this.value]);
             });
-            
+
             $('.background').change(function () {
                 var value = parseInt(this.value);
                 var background = 'none';
@@ -165,7 +181,7 @@
                 }
                 $('body').css('background-image', background);
             });
-            
+
         },
 
         buildGridLayout: function () {
@@ -197,31 +213,33 @@
                 var grid = this.$grid.data('gridstack');
 
                 $.each(this.widgets, function (idx, widget) {
-                    
+
                     var id = widget.id;
                     var width = widget.width * self.settings.cellWidth;
                     var $wrapper = $('<div>');
                     var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
-                    var $hover = $('<div class="widget-hover">').mouseup(function () {
-                        
+                    var $hover = $('<div id="' + widget.url + '_widget" class="widget-hover">').mouseup(function () {
+
                         if (self._editMode) {
                             return;
                         }
-                        
+
                         if (widget.settings) {
                             alert('Open Widget Settigs Dialog: ' + self.settings.apiUrl + 'settings/' + id);
                         }
-                        
+
                         alert('Call App ID: ' + id);
-                        
+
                         window.location.hash = widget.url;
-                        
+
                     });
                     var $title = $('<div class="widget-title">' + widget.name + '</div>');
                     var $close = $('<div class="widget-remove">remove</div>').click(function () {
-                        
+
                         alert('Remove Widget ID:' + id);
-                        
+
+                        window.location.hash = '';
+
                     });
                     
                     if (widget.refresh) {
