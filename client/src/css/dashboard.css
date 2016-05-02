@@ -112,7 +112,8 @@ body {
 }
 
 .widget-info {
-    height: 300px;
+    height: 100px;
+    margin-bottom: 20px;
     background: blue;
 }
 

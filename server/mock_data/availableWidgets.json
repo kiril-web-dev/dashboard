@@ -11,6 +11,18 @@
                 "height": 1,
                 "x": 0,
                 "y": 0
+		},
+		{
+			 	"id": 2,
+                "name": "Two",
+                "url": "widget-two",
+                "settings": 1,
+                "refresh": 10,
+                "locked": 1,
+                "width": 1,
+                "height": 1,
+                "x": 0,
+                "y": 0
 		}
 	]
 }

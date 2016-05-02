@@ -1,3 +1,5 @@
+
+
 ;( function( $, window, document, undefined ) {
 
     'use strict';
@@ -198,18 +200,24 @@
         },
 
         populateAvailableWidgetsMenu: function (widgets) {
+            var self = this;
             widgets.forEach(function (widget) {
                 var widgetInfo = $('<li>');
                 widgetInfo.addClass('widget-info ');
 
                 widgetInfo.draggable({
-                    start: function(e, ui) {
+                    stop: function (e, ui) {
+                    
+                        var $el = $('#KORR');
+                        $el.removeClass('widget-clone')
+                    }, 
+                    start: function (e, ui) {
                         $(this).height(widget.height * 300);
                         $(this).width(widget.width * 300);
+                        $(this).attr('id','KORR')
                         $(this).removeClass('widget-info');
-                        $(this).addClass('widget-clone');
-                        $(this).append($(ui.draggable).clone());
-
+                        $(this).addClass('widget-clone grid-stack-item');
+                        $(this).append($(ui.helper).clone());
                     }
                 });
                 self.$availableWidgetsMenu.append(widgetInfo);
@@ -217,6 +225,7 @@
         },
 
         buildAvailableWidgetsMenu: function () {
+            var self = this;
             var $menu = $('<ul>');
             $menu.attr('id','available-widgets-menu');
             self.$availableWidgetsMenu = $menu;
@@ -235,51 +244,58 @@
             this.$gridLayout.append($menuButton);
         },
 
+        createWidgetElement: function (widgetSettings) {
+            var self = this;
+            var id = widgetSettings.id;
+            var width = widgetSettings.width * self.settings.cellWidth;
+            var $wrapper = $('<div>');
+            var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
+            var $hover = $('<div id="' + widgetSettings.url + '_widget" class="widget-hover">').mouseup(function () {
+
+                if (self._editMode) {
+                    return;
+                }
+
+                if (widgetSettings.settings) {
+                    alert('Open Widget Settigs Dialog: ' + self.settings.apiUrl + 'settings/' + id);
+                }
+
+                alert('Call App ID: ' + id);
+
+                window.location.hash = widgetSettings.url;
+
+            });
+            var $title = $('<div class="widget-title">' + widgetSettings.name + '</div>');
+            var $close = $('<div class="widget-remove">remove</div>').click(function () {
+
+                alert('Remove Widget ID:' + id);
+
+                window.location.hash = '';
+
+            });
+            
+            if (widgetSettings.refresh) {
+                widgetSettings.refresh = setInterval(function () {
+                    $iframe.attr('src', $iframe.attr('src'));
+                }, widgetSettings.refresh * 1000);
+            }
+
+            $('<div class="grid-stack-item-content">')
+                .append($iframe)
+                .append($hover)
+                .append($title)
+                .append($close)
+                .appendTo($wrapper);                        
+
+            return $wrapper;
+        },
+
         setGridConfiguration: function (config) {
             var self = this;
 
              $.each(config.widgets, function (idx, widget) {
 
-                    var id = widget.id;
-                    var width = widget.width * self.settings.cellWidth;
-                    var $wrapper = $('<div>');
-                    var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
-                    var $hover = $('<div id="' + widget.url + '_widget" class="widget-hover">').mouseup(function () {
-
-                        if (self._editMode) {
-                            return;
-                        }
-
-                        if (widget.settings) {
-                            alert('Open Widget Settigs Dialog: ' + self.settings.apiUrl + 'settings/' + id);
-                        }
-
-                        alert('Call App ID: ' + id);
-
-                        window.location.hash = widget.url;
-
-                    });
-                    var $title = $('<div class="widget-title">' + widget.name + '</div>');
-                    var $close = $('<div class="widget-remove">remove</div>').click(function () {
-
-                        alert('Remove Widget ID:' + id);
-
-                        window.location.hash = '';
-
-                    });
-                    
-                    if (widget.refresh) {
-                        widget.refresh = setInterval(function () {
-                            $iframe.attr('src', $iframe.attr('src'));
-                        }, widget.refresh * 1000);
-                    }
-
-                    $('<div class="grid-stack-item-content">')
-                        .append($iframe)
-                        .append($hover)
-                        .append($title)
-                        .append($close)
-                        .appendTo($wrapper);                        
+                   var $wrapper = self.createWidgetElement(widget);                     
 
                     self._grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
                     widget.$widget = $wrapper;
@@ -323,7 +339,6 @@
             self._grid = this.$grid.data('gridstack');
 
             self.setGridConfiguration(self._configurations[properViewport]);
-            debugger;
         },
 
         setConfigurations: function (data) {
