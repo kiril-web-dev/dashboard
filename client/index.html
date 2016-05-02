@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8">
         <title>Dashboard</title>
-        <link rel="stylesheet" type="text/css" href="/css/vendors.css">
-        <link rel="stylesheet" type="text/css" href="/css/dashboard.css">
-        <link rel="stylesheet" type="text/css" id="theme" href="/css/themes/theme_1.css">
+        <link rel="stylesheet" type="text/css" href="./css/vendors.css">
+        <link rel="stylesheet" type="text/css" href="./css/dashboard.css">
+        <link rel="stylesheet" type="text/css" id="theme" href="./css/themes/theme_1.css">
         <link rel="stylesheet" type="text/css" id="font" href='https://fonts.googleapis.com/css?family=Raleway'>
     </head>
     <body>
@@ -36,20 +36,12 @@
         </div>
         <div class="panel-top panel-top-bg"></div>
 
-        <div class="panel-add row">
-            <div class="col-md-12">
-                <div class="sidebar">
-                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET</div></div>
-                </div>
-            </div>
-        </div>
-
         <div class="container-fluid">
             <div id='dashboard'></div>
         </div>
 
-        <script src="/js/vendors.js"></script>
-        <script src="/js/dashboard.js"></script>
+        <script src="./js/vendors.js"></script>
+        <script src="./js/dashboard.js"></script>
 
         <script>
 
@@ -57,13 +49,6 @@
 
                 $('#dashboard').dashboard({
                     apiUrl: 'http://localhost:3333/dashboard/'
-                });
-
-                $('.sidebar .grid-stack-item').draggable({
-                    revert: 'invalid',
-                    handle: '.grid-stack-item-content',
-                    scroll: false,
-                    appendTo: 'body'
                 });
 
             });

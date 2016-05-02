@@ -1,6 +1,4 @@
-
-
-;( function( $, window, document, undefined ) {
+;(function($, window, document, undefined) {
 
     'use strict';
 
@@ -47,6 +45,7 @@
         init: function() {
 
             var self = this;
+            var profile = new self.profile({ apiUrl: self.settings.apiUrl });
 
             self.buildGridLayout();
             self.buildAvailableWidgetsMenu();
@@ -67,13 +66,16 @@
 
                 if (check.login) {
                     profile.show('logout');
+                    $.notify('Logged in', 'info');
                 } else {
                     profile.show('login');
+                    $.notify('Not Logged in', 'info');
                 }
 
                 $.get(self.settings.apiUrl + 'default', function (response) {
                     self._configurations = response;
                     self.initProperGridForViewport();
+                    $.notify('Default Configuration', 'info');
                     self.listenForResolutionChange();
                     self.checkHash();
                 });
@@ -81,17 +83,20 @@
             });
 
         },
-        
+
         profile: function (settings) {
 
             var $profileLogIn = $('#profileLogIn').click(function(){ return login(true); });
             var $profileLogOut = $('#profileLogOut').click(function(){ return login(false); });
 
             function check(){
+
                 return $.get(settings.apiUrl + 'profile/check');
+
             }
 
             function show(target){
+
                 if (target === 'login') {
                     $profileLogOut.hide();
                     $profileLogIn.show();
@@ -99,6 +104,7 @@
                     $profileLogIn.hide();
                     $profileLogOut.show();
                 }
+
             }
 
             function login(type){
@@ -108,8 +114,10 @@
                 $.post(settings.apiUrl + 'profile/log' + type, {}, function (response) {
                     if (response.login) {
                         show('logout');
+                        $.notify('Login', 'success');
                     } else {
                         show('login');
+                        $.notify('Logout', 'success');
                     }
                 });
 
@@ -133,6 +141,7 @@
             }
 
             $(hash + '_widget').mouseup();
+            $.notify('Auto Open Widget', 'success');
 
         },
 
@@ -143,6 +152,8 @@
 
             $('#editMode').change(function () {
 
+                var notified = false;
+
                 self._editMode = $(this).is(':checked');
 
                 $.each(self._configurations, function() {
@@ -150,9 +161,17 @@
                     if (self._editMode) {
                         self.$gridLayout.addClass('edit-mode');
                         $addWidget.show();
+                        if (!notified) {
+                            $.notify('Edit Mode is ON', 'success');
+                            notified = true;
+                        }
                     } else {
                         self.$gridLayout.removeClass('edit-mode');
                         $addWidget.hide();
+                        if (!notified) {
+                            $.notify('Edit Mode is OFF', 'success');
+                            notified = true;
+                        }
                     }
 
                     $.each(this.widgets, function (idx, widget) {
@@ -162,10 +181,14 @@
 
                 });
 
+                notified = false;
+
             });
+            
+            $.notify('Edit Mode is OFF', 'info');
 
         },
-        
+
         initStyles: function () {
 
             var themes = '/css/themes/';
@@ -174,29 +197,37 @@
 
             $('.theme').change(function () {
                 $('#theme').attr('href', themes + 'theme_' + this.value + '.css');
-                console.log('fonts[this.value]', fontsUrl + fonts[this.value]);
                 $('#font').attr('href', fontsUrl + fonts[this.value]);
+                $.notify('Theme Changed', 'success');
             });
 
             $('.background').change(function () {
+
                 var value = parseInt(this.value);
                 var background = 'none';
+
                 if (value > 0) {
                     background = 'url(' + themes + 'backgrounds/background_' + value + '.jpg)';
                 }
+
                 $('body').css('background-image', background);
+                $.notify('Background Changed', 'success');
+
             });
+
+            $.notify('Default Theme', 'info');
+            $.notify('Default Background', 'info');
 
         },
 
         buildGridLayout: function () {
-            var $mount = $(this.element);
-            this.$gridLayout = $('<div id="grid-layout">');
-            this.$gridRoot = $('<div>');
-            this.$gridRoot.css('margin', '0 auto');
-            this.$gridRoot.appendTo(this.$gridLayout);
-            this.$gridLayout.appendTo($mount);
-            return this.$gridRoot;
+            
+            $.notify.defaults({ position: 'right middle', autoHideDelay: 10000 });
+
+            this.$gridLayout = $('<div>').appendTo($(this.element));
+
+            this.$gridRoot = $('<div class="widget-root">').appendTo(this.$gridLayout);
+
         },
 
         populateAvailableWidgetsMenu: function (widgets) {
@@ -341,92 +372,20 @@
             self.setGridConfiguration(self._configurations[properViewport]);
         },
 
-        setConfigurations: function (data) {
-
-            var self = this;
-
-            self._configurations = data;
-
-            $.each(self._configurations, function(key) {
-
-                var stack = this.stack || self.settings.viewports[key].stack;
-
-                this.$grid =
-                    $('<div class="grid-stack grid-stack-' + stack + '">')
-                        .css('display', 'none')
-                        .appendTo(self.$gridRoot)
-                        .gridstack(self.settings.grid);
-
-                var grid = this.$grid.data('gridstack');
-
-                $.each(this.widgets, function (idx, widget) {
-
-                    var id = widget.id;
-                    var width = widget.width * self.settings.cellWidth;
-                    var $wrapper = $('<div>');
-                    var $iframe = $('<iframe src="' + self.settings.apiUrl + 'widgets/' + id + '" id="widget_' + id + '" name="widget_' + id + '" scrolling="no"></iframe>')
-                    var $hover = $('<div id="' + widget.url + '_widget" class="widget-hover">').mouseup(function () {
-
-                        if (self._editMode) {
-                            return;
-                        }
-
-                        if (widget.settings) {
-                            alert('Open Widget Settigs Dialog: ' + self.settings.apiUrl + 'settings/' + id);
-                        }
-
-                        alert('Call App ID: ' + id);
-
-                        window.location.hash = widget.url;
-
-                    });
-                    var $title = $('<div class="widget-title">' + widget.name + '</div>');
-                    var $close = $('<div class="widget-remove">remove</div>').click(function () {
-
-                        alert('Remove Widget ID:' + id);
-
-                        window.location.hash = '';
-
-                    });
-                    
-                    if (widget.refresh) {
-                        widget.refresh = setInterval(function () {
-                            $iframe.attr('src', $iframe.attr('src'));
-                        }, widget.refresh * 1000);
-                    }
-
-                    $('<div class="grid-stack-item-content">')
-                        .append($iframe)
-                        .append($hover)
-                        .append($title)
-                        .append($close)
-                        .appendTo($wrapper);                        
-
-                    grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
-                    widget.$widget = $wrapper;
-                    
-                    grid.movable($wrapper, false);
-
-                });
-
-            });
-
-        },
-
         listenForResolutionChange: function () {
+
             var self = this;
             $(window).resize(_.throttle(self.initProperGridForViewport.bind(self), self.settings.throttleInterval));
-        },
+        }
 
     });
 
-    $.fn[ pluginName ] = function( options ) {
-        return this.each( function() {
-            if ( !$.data( this, 'plugin_' + pluginName ) ) {
-                $.data( this, 'plugin_' +
-                    pluginName, new Plugin( this, options ) );
+    $.fn[pluginName] = function (options) {
+        return this.each(function () {
+            if (!$.data(this, 'plugin_' + pluginName)) {
+                $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
             }
-        } );
+        });
     };
 
-} )( jQuery, window, document );
+})(jQuery, window, document);

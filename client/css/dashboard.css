@@ -29,6 +29,14 @@ body {
     z-index: 33;
 }
 
+.widget-root {
+    margin: 0 auto;
+}
+
+/*.grid-stack {
+    display: none;
+}*/
+
 .grid-stack-item-content {
     color: #2c3e50;
     padding-top: 40px;

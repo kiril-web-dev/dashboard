@@ -7,7 +7,8 @@ var
 
 app.use(cors());	
 
-app.use(express.static(__dirname + '/../client/src'));
+app.use(express.static(__dirname + '/../client'));
+
 app.use(session({ secret: '*', resave: true, saveUninitialized: true }));
 
 // available widgets
@@ -38,7 +39,6 @@ app.get('/dashboard/app/:id', function (req, res) {
 
 // profile check
 app.get('/dashboard/profile/check', function (req, res) {
-	console.log('check req.session', req.session.login);
 	res.json({ login: req.session.login });
 });
 
@@ -55,5 +55,5 @@ app.post('/dashboard/profile/logout', function (req, res) {
 });
 
 app.listen(3333, function () {
-	console.log('\nDashboard Server Available\n');
+	console.log('\nDashboard Server\n');
 });
