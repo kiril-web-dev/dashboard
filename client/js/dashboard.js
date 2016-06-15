@@ -8,7 +8,13 @@
                 disableResize: true,
                 cellHeight: 300,
                 verticalMargin: 20,
-                acceptWidgets: '.grid-stack-item'
+                acceptWidgets: '.grid-stack-item',
+                draggable: {
+                  stop: function(event, ui){
+                    console.log('stop drag', event, ui);
+                    alert('stop drag');
+                  }
+                }
             },
             viewports: {
                 viewport_1: { stack: 1, range: { to: 600 } },
@@ -67,12 +73,25 @@
 
                 $.get(self.settings.apiUrl + 'default', function (response) {
                     $.notify('Default Configuration', 'info');
-                    self.setConfigurations(response);  
+                    self.setConfigurations(response);
                     self.showPropperConfiguration()
                     self.listenForResolutionChange();
                     self.checkHash();
                 });
 
+            });
+
+            $('.sidebar .grid-stack-item').draggable({
+                revert: 'invalid',
+                handle: '.grid-stack-item-content',
+                scroll: false,
+                appendTo: 'body',
+                start: function(){
+                  $('.panel-add').fadeOut();
+                },
+                stop: function(){
+                  $('.panel-add').fadeIn();
+                }
             });
 
         },
@@ -117,7 +136,7 @@
                 return false;
 
             }
-            
+
             return {
                 check: check,
                 show: show
@@ -179,7 +198,7 @@
                 notified = false;
 
             });
-            
+
             $.notify('Edit Mode is OFF', 'info');
 
         },
@@ -213,10 +232,12 @@
             $.notify('Default Theme', 'info');
             $.notify('Default Background', 'info');
 
+            console.log('GET DASHBOARD CONFIG FROM COOKIES:', Cookies.get('dashboard_config'));
+
         },
 
         buildGridLayout: function () {
-            
+
             $.notify.defaults({ position: 'right middle', autoHideDelay: 10000 });
 
             this.$gridLayout = $('<div>').appendTo($(this.element));
@@ -271,7 +292,7 @@
                         $.notify('Remove Widget: ' + id, 'success');
 
                     });
-                    
+
                     if (widget.refresh) {
                         widget.refresh = setInterval(function () {
                             $iframe.attr('src', $iframe.attr('src'));
@@ -284,11 +305,11 @@
 
                     $('<div class="grid-stack-item-content">')
                         .append([$iframe, $hover, $title, $close])
-                        .appendTo($wrapper);                        
+                        .appendTo($wrapper);
 
                     grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
                     widget.$widget = $wrapper;
-                    
+
                     grid.movable($wrapper, false);
 
                 });
@@ -317,7 +338,7 @@
                     from: width > (range.from || 0),
                     to: range.to ? width <= range.to : true
                 };
-                
+
                 if (self._currentResolution === key) {
                     return;
                 }
@@ -327,6 +348,18 @@
                     this.$grid.show();
                     self._currentResolution = key;
                     $.notify('Set Configuration: ' + (range.from ? range.from + '-' : '<') + (range.to ? range.to : '∞'), 'success');
+
+                    //console.log('aa', this.$grid.data('gridstack'));
+
+                    var dashboard_config = _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                        var node = $(el).data('_gridstack_node');
+                        return { x: node.x, y: node.y, width: node.width, height: node.height };
+                    }, this);
+
+                    dashboard_config = JSON.stringify(dashboard_config, null, '    ');
+
+                    Cookies.set('dashboard_config', dashboard_config);
+
                 } else {
                     this.$grid.hide();
                 }

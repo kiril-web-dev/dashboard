@@ -11,7 +11,7 @@
     <body>
 
         <div class="panel-top">
-            
+
             Dashboard:
             <input id="editMode" type="checkbox">
             <label for="editMode">Edit mode</label>
@@ -25,7 +25,7 @@
             <input type="radio" name="background" class="background" value="0" checked="checked">
             <input type="radio" name="background" class="background" value="1">
             <input type="radio" name="background" class="background" value="2">
-            
+
             <span id="profileLogIn" class="panel-profile">
                 Not Logged In <a href="#">login</a>
             </span>
@@ -39,7 +39,19 @@
         <div class="panel-add row">
             <div class="col-md-12">
                 <div class="sidebar">
-                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET</div></div>
+                    <div class="grid-stack-item">
+                      <div class="grid-stack-item-content ui-draggable-handle">
+                        content 1
+                        <div id="widget-six_widget" class="widget-hover"></div>
+                        <div class="widget-title">One</div>
+                        <div class="widget-remove">remove</div>
+                      </div>
+                    </div>
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET 2</div></div>
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET 3</div></div>
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET 4</div></div>
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET 5</div></div>
+                    <div class="grid-stack-item"><div class="grid-stack-item-content">ADD WIDGET 6</div></div>
                 </div>
             </div>
         </div>
@@ -57,13 +69,6 @@
 
                 $('#dashboard').dashboard({
                     apiUrl: 'http://localhost:3333/dashboard/'
-                });
-
-                $('.sidebar .grid-stack-item').draggable({
-                    revert: 'invalid',
-                    handle: '.grid-stack-item-content',
-                    scroll: false,
-                    appendTo: 'body'
                 });
 
             });
