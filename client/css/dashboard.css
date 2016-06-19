@@ -94,7 +94,7 @@ body {
 
 /* WIDGETS MENU */
 #available-widgets-menu-wrapper {
-    display: block;
+    display: none;
     height: 100%;
     width: 100%;
     /*menu height*/
@@ -104,6 +104,23 @@ body {
 
 #available-widgets-menu {
     list-style-type: none;
+}
+
+#available-widgets-menu-btn {
+    position: fixed;
+    top: 5px;
+    right: 200px;
+    width: 50px;
+    z-index: 4000;
+    height: 50px;
+    background: red;
+    border: none;
+    border-radius: 50%;
+}
+
+#available-widgets-menu-btn.open {
+    top: 30px;
+    left: 10px;
 }
 
 .widget-info {

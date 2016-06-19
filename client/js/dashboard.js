@@ -57,7 +57,6 @@
             }
 
             $.get(self.settings.apiUrl + 'availableWidgets', function (data) {
-                debugger;
                 self.populateAvailableWidgetsMenu(data.widgets);
             })
 
@@ -265,8 +264,17 @@
             var $menuWrapper = $('<div>');
             $menuWrapper.attr('id','available-widgets-menu-wrapper');
 
+            var $menuButton = $('<div/>');
+            $menuButton.attr('id','available-widgets-menu-btn');
+            $menuButton.click(function () {
+                $(this).toggleClass('open');
+                $menuWrapper.toggle();
+            })
+
+
             $menuWrapper.append($menu);
             this.$gridLayout.prepend($menuWrapper);
+            this.$gridLayout.append($menuButton);
         },
 
         createWidgetElement: function (widgetSettings) {
