@@ -94,34 +94,23 @@ body {
 
 /* WIDGETS MENU */
 #available-widgets-menu-wrapper {
-    display: none;
-    position: fixed;
+    display: block;
     height: 100%;
+    width: 100%;
     /*menu height*/
-    top: 45px;
-    right: 1px;
-    width: 200px;
     background: #fff;
 }
 
-#available-widgets-menu-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 10px 0px 0px 10px;
-    background: #ccc;
-    border: none;
-    position: fixed;
-    right: 0px;
-    bottom: 50%;
-}
 
 #available-widgets-menu {
     list-style-type: none;
 }
 
 .widget-info {
+    display: inline-block;
     height: 100px;
-    margin-bottom: 20px;
+    width: 100px;
+    margin: 20px;
     background: blue;
 }
 
