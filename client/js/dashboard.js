@@ -241,18 +241,21 @@
                 $widgetInfo.width(widget.width * 300);
 
                 $widgetInfo.draggable({
+                    helper: 'clone',
                      stop: function (e, ui) {
+                         $(this).show()
+
                          //need to query it!! ui.helper wont do it
                          var $el = $('#' + widget.id);
                          //rm for sure
                          //$el.addClass('gridstack-item');
                          var w = self.createWidgetElement(widget).find('.grid-stack-item-content');
-                         debugger;
                          $el.find('.grid-stack-item-content').replaceWith(w);
-                         debugger;
 
                      },
                      start: function (e, ui) {
+                         $(this).hide();
+
                          //detach the el from relative parent to escape from overflow hidden
                          //$(this).css('position','fixed');
                          //$(this).top('position','fixed');
