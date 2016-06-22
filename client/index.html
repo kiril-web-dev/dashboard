@@ -1,59 +1,97 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Dashboard</title>
-        <link rel="stylesheet" type="text/css" href="./css/vendors.css">
-        <link rel="stylesheet" type="text/css" href="./css/dashboard.css">
-        <link rel="stylesheet" type="text/css" id="theme" href="./css/themes/theme_1.css">
-        <link rel="stylesheet" type="text/css" id="font" href='https://fonts.googleapis.com/css?family=Raleway'>
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="./css/vendors.css">
+    <link rel="stylesheet" type="text/css" href="./css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="./css/menu.css">
+    <link rel="stylesheet" type="text/css" id="theme" href="./css/themes/theme_1.css">
+    <link rel="stylesheet" type="text/css" id="font" href='https://fonts.googleapis.com/css?family=Raleway'>
+    <style>
 
-        <div class="panel-top">
-            
-            Dashboard:
-            <input id="editMode" type="checkbox">
-            <label for="editMode">Edit mode</label>
+    </style>
+</head>
+<body>
+<div class="panel-top">
+    <span id="profileLogIn" class="panel-profile">
+        Not Logged In <a href="#">login</a>
+    </span>
+    <span id="profileLogOut" class="panel-profile">
+        Logged In <a href="#">logout</a>
+    </span>
+</div>
+<div class="panel-top panel-top-bg"></div>
 
-            Theme:
-            <input type="radio" name="theme" class="theme" value="1" checked="checked">
-            <input type="radio" name="theme" class="theme" value="2">
-            <input type="radio" name="theme" class="theme" value="3">
+<div class="widgets-menu-toggle-button"></div>
+<div class="menu-wrapper">
+    <div id="menu">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#widgets-tab" aria-controls="home" role="tab" data-toggle="tab">Уиджети</a></li>
+            <li role="presentation"><a href="#skins-tab" aria-controls="skins-tab" role="tab" data-toggle="tab">Скинове</a></li>
+            <li role="presentation"><a href="#config-tab" aria-controls="config-tab" role="tab" data-toggle="tab">Подредби</a></li>
+        </ul>
 
-            Background:
-            <input type="radio" name="background" class="background" value="0" checked="checked">
-            <input type="radio" name="background" class="background" value="1">
-            <input type="radio" name="background" class="background" value="2">
-            
-            <span id="profileLogIn" class="panel-profile">
-                Not Logged In <a href="#">login</a>
-            </span>
-            <span id="profileLogOut" class="panel-profile">
-                Logged In <a href="#">logout</a>
-            </span>
+        <!-- Tab panes -->
+        <div class="tab-content" >
+            <div role="tabpanel" class="tab-pane active" id="widgets-tab">
+                <div id="widgets-menu" class="grid">
 
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="skins-tab">
+                Theme:
+                <input type="radio" name="theme" class="theme" value="1" checked="checked">
+                <input type="radio" name="theme" class="theme" value="2">
+                <input type="radio" name="theme" class="theme" value="3">
+
+                Background:
+                <input type="radio" name="background" class="background" value="0" checked="checked">
+                <input type="radio" name="background" class="background" value="1">
+                <input type="radio" name="background" class="background" value="2">
+            </div>
+            <div role="tabpanel" class="tab-pane" id="config-tab">
+                Dashboard:
+                <input id="editMode" type="checkbox">
+                <label for="editMode">Edit mode</label>
+            </div>
         </div>
-        <div class="panel-top panel-top-bg"></div>
+    </div>
+</div>
 
-        <div class="container-fluid">
-            <div id='dashboard'></div>
-        </div>
+<div class="container-fluid">
+    <div id='dashboard'></div>
+</div>
 
-        <script src="./js/vendors.js"></script>
-        <script src="./js/dashboard.js"></script>
 
-        <script>
+</div>
 
-            $(function () {
+<script src="./js/vendors.js"></script>
+<script src="./js/dashboard.js"></script>
 
-                $('#dashboard').dashboard({
-                    apiUrl: 'http://localhost:3333/dashboard/'
-                });
+<script>
 
-            });
+    $(function () {
+        $('#dashboard').dashboard({
+            apiUrl: 'http://localhost:3333/dashboard/'
+        });
 
-        </script>
+    });
 
-    </body>
+    $('.sidebar .grid-stack-item').draggable({
+        revert: 'invalid',
+        handle: '.grid-stack-item-content',
+        scroll: false,
+        appendTo: 'body'
+    });
+
+    $('#menu a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+
+</script>
+
+</body>
 </html>

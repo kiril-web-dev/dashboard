@@ -37,6 +37,9 @@
         this._grid = null;
         this._editMode = false;
 
+        this.menuWrapper = $('.menu-wrapper');
+        this.toggleMenuButton = $('.widgets-menu-toggle-button');
+
         this.init();
     }
 
@@ -48,7 +51,6 @@
             var profile = new self.profile({ apiUrl: self.settings.apiUrl });
 
             self.buildGridLayout();
-            self.buildAvailableWidgetsMenu();
             self.initEditMode();
             self.initStyles();
 
@@ -57,7 +59,7 @@
             }
 
             $.get(self.settings.apiUrl + 'availableWidgets', function (data) {
-                self.populateAvailableWidgetsMenu(data.widgets);
+                self.buildAvailableWidgetsMenu(data.widgets);
             })
 
             var profile = new self.profile({ apiUrl: self.settings.apiUrl });
@@ -191,7 +193,7 @@
 
         initStyles: function () {
 
-            var themes = '/css/themes/';
+            var themes = 'css/themes/';
             var fonts = { 1: 'Raleway', 2: 'Oswald', 3: 'Indie+Flower' };
             var fontsUrl = 'https://fonts.googleapis.com/css?family=';
 
@@ -230,51 +232,78 @@
 
         },
 
-        populateAvailableWidgetsMenu: function (widgets) {
+        createMenuWidgets: function (items) {
             var self = this;
-            widgets.forEach(function (widget) {
-                var widgetInfo = $('<li>');
-                widgetInfo.addClass('widget-info ');
+            var widgets = items.map(function (widget) {
+                var $widgetInfo = $('<div>').addClass('widgets-menu-item grid-stack-item');
+                $widgetInfo.append($('<div>').addClass('grid-stack-item-content'))
+                $widgetInfo.height(300);
+                $widgetInfo.width(widget.width * 300);
 
-                widgetInfo.draggable({
-                    stop: function (e, ui) {
-                    
-                        var $el = $('#KORR');
-                        $el.removeClass('widget-clone')
-                    }, 
-                    start: function (e, ui) {
-                        $(this).height(widget.height * 300);
-                        $(this).width(widget.width * 300);
-                        $(this).attr('id','KORR')
-                        $(this).removeClass('widget-info');
-                        $(this).addClass('widget-clone grid-stack-item');
-                        $(this).append($(ui.helper).clone());
-                    }
-                });
-                self.$availableWidgetsMenu.append(widgetInfo);
-            })
+                $widgetInfo.draggable({
+                     stop: function (e, ui) {
+                         //need to query it!! ui.helper wont do it
+                         var $el = $('#' + widget.id);
+                         //rm for sure
+                         //$el.addClass('gridstack-item');
+                         var w = self.createWidgetElement(widget).find('.grid-stack-item-content');
+                         debugger;
+                         $el.find('.grid-stack-item-content').replaceWith(w);
+                         debugger;
+
+                     },
+                     start: function (e, ui) {
+                         //detach the el from relative parent to escape from overflow hidden
+                         //$(this).css('position','fixed');
+                         //$(this).top('position','fixed');
+                         $(this).attr('id', widget.id);
+                         $(this).addClass('grid-stack-item');
+                     }
+                 });
+
+                return $widgetInfo[0]
+            }); 
+
+            return widgets;
         },
 
-        buildAvailableWidgetsMenu: function () {
+        buildAvailableWidgetsMenu: function (widgets) {
             var self = this;
-            var $menu = $('<ul>');
-            $menu.attr('id','available-widgets-menu');
-            self.$availableWidgetsMenu = $menu;
+            var widgetsMenu = document.getElementById('widgets-menu');
 
-            var $menuWrapper = $('<div>');
-            $menuWrapper.attr('id','available-widgets-menu-wrapper');
+            var leftArrow = document.createElement('div')
+            leftArrow.classList.add('widgets-menu-arrow', 'left');
+            widgetsMenu.appendChild(leftArrow);
+            leftArrow.addEventListener('click', function() {
 
-            var $menuButton = $('<div/>');
-            $menuButton.attr('id','available-widgets-menu-btn');
-            $menuButton.click(function () {
-                $(this).toggleClass('open');
-                $menuWrapper.toggle();
             })
 
+            var items = document.createElement('div')
+            items.classList.add('widgets-menu-items');
+            var widgets = self.createMenuWidgets(widgets);
+            widgets.forEach(function(w) {
+                items.appendChild(w);
+            });
+            widgetsMenu.appendChild(items);
 
-            $menuWrapper.append($menu);
-            this.$gridLayout.prepend($menuWrapper);
-            this.$gridLayout.append($menuButton);
+            var rightArrow = document.createElement('div')
+            rightArrow.classList.add('widgets-menu-arrow', 'right');
+            rightArrow.addEventListener('click', function() {
+
+            })
+            widgetsMenu.appendChild(rightArrow);
+
+            this.toggleMenuButton.click(function () {
+                self.toggleMenu();
+            })
+
+            //self.$availableWidgetsMenu = $widgetsMenu;
+            //self.$gridLayout.prepend($menuWrapper);
+        },
+
+        toggleMenu: function () {
+          this.toggleMenuButton.toggleClass('open');
+          this.menuWrapper.toggle();
         },
 
         createWidgetElement: function (widgetSettings) {
@@ -318,7 +347,7 @@
                 .append($hover)
                 .append($title)
                 .append($close)
-                .appendTo($wrapper);                        
+                .appendTo($wrapper);
 
             return $wrapper;
         },

@@ -10,12 +10,14 @@ body {
     width: 100%;
     padding: 10px;
 }
+
 .panel-top-bg {
     z-index: 32;
     height: 45px;
     background: white;
     opacity: .7;
 }
+
 .panel-top .panel-profile {
     display: none;
     float: right;
@@ -92,39 +94,10 @@ body {
     display: block;
 }
 
-/* WIDGETS MENU */
-#available-widgets-menu-wrapper {
-    display: none;
-    height: 100%;
-    width: 100%;
-    /*menu height*/
-    background: #fff;
-}
 
-
-#available-widgets-menu {
-    list-style-type: none;
-}
-
-#available-widgets-menu-btn {
-    position: fixed;
-    top: 5px;
-    right: 200px;
-    width: 50px;
-    z-index: 4000;
-    height: 50px;
-    background: red;
-    border: none;
-    border-radius: 50%;
-}
-
-#available-widgets-menu-btn.open {
-    top: 30px;
-    left: 10px;
-}
+/* D & D widgets from menu */
 
 .widget-info {
-    display: inline-block;
     height: 100px;
     width: 100px;
     margin: 20px;
