@@ -126,7 +126,7 @@
                 return false;
 
             }
-            
+
             return {
                 check: check,
                 show: show
@@ -186,7 +186,7 @@
                 notified = false;
 
             });
-            
+
             $.notify('Edit Mode is OFF', 'info');
 
         },
@@ -223,7 +223,7 @@
         },
 
         buildGridLayout: function () {
-            
+
             $.notify.defaults({ position: 'right middle', autoHideDelay: 10000 });
 
             this.$gridLayout = $('<div>').appendTo($(this.element));
@@ -265,7 +265,7 @@
                  });
 
                 return $widgetInfo[0]
-            }); 
+            });
 
             return widgets;
         },
@@ -274,14 +274,10 @@
             var self = this;
             var widgetsMenu = document.getElementById('widgets-menu');
 
-            var leftArrow = document.createElement('div')
-            leftArrow.classList.add('widgets-menu-arrow', 'left');
-            widgetsMenu.appendChild(leftArrow);
-            leftArrow.addEventListener('click', function() {
 
-            })
 
-            var items = document.createElement('div')
+            var items = document.createElement('div');
+            var $items = $(items);
             items.classList.add('widgets-menu-items');
             var widgets = self.createMenuWidgets(widgets);
             widgets.forEach(function(w) {
@@ -289,10 +285,17 @@
             });
             widgetsMenu.appendChild(items);
 
-            var rightArrow = document.createElement('div')
+            var leftArrow = document.createElement('div')
+            leftArrow.classList.add('widgets-menu-arrow', 'left');
+            widgetsMenu.appendChild(leftArrow);
+            leftArrow.addEventListener('click', function() {
+                $items.animate({ scrollLeft: '-=300'}, 500)
+            })
+
+            var rightArrow = document.createElement('div');
             rightArrow.classList.add('widgets-menu-arrow', 'right');
             rightArrow.addEventListener('click', function() {
-
+                $items.animate({ scrollLeft: '+=300'}, 500);
             })
             widgetsMenu.appendChild(rightArrow);
 
@@ -338,7 +341,7 @@
                 window.location.hash = '';
 
             });
-            
+
             if (widgetSettings.refresh) {
                 widgetSettings.refresh = setInterval(function () {
                     $iframe.attr('src', $iframe.attr('src'));
@@ -360,11 +363,11 @@
 
              $.each(config.widgets, function (idx, widget) {
 
-                   var $wrapper = self.createWidgetElement(widget);                     
+                   var $wrapper = self.createWidgetElement(widget);
 
                     self._grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
                     widget.$widget = $wrapper;
-                    
+
                     self._grid.movable($wrapper, false);
 
                 });
