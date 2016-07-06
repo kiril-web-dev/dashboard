@@ -349,6 +349,7 @@
             }
 
             $('<div class="grid-stack-item-content">')
+                .data('id', id)
                 .append($iframe)
                 .append($hover)
                 .append($title)
@@ -359,21 +360,41 @@
         },
 
         setGridConfiguration: function (config) {
-            var self = this;
 
-             $.each(config.widgets, function (idx, widget) {
+          var self = this;
 
-                   var $wrapper = self.createWidgetElement(widget);
+          $.each(config.widgets, function (idx, widget) {
+            var $wrapper = self.createWidgetElement(widget);
+            self._grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
+            widget.$widget = $wrapper;
+            self._grid.movable($wrapper, false);
+          });
 
-                    self._grid.addWidget($wrapper, widget.x, widget.y, widget.width, widget.height);
-                    widget.$widget = $wrapper;
+          var dashboard_config = _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+            var node = $(el).data('_gridstack_node');
+            return { id: $(el).find('iframe').attr('id'), x: node.x, y: node.y, width: node.width, height: node.height };
+          }, this);
 
-                    self._grid.movable($wrapper, false);
+          dashboard_config = JSON.stringify(dashboard_config, null, '');
 
-                });
+          Cookies.set('dashboard_config', dashboard_config);
+          console.log('set dashboard_config', dashboard_config);
+
+          $.post(self.settings.apiUrl + 'config', dashboard_config, function (response) {
+              $.notify('Dashboard Config Updated', 'info');
+          });
+
         },
 
         initProperGridForViewport: function () {
+
+          var dashboard_config = Cookies.get('dashboard_config');
+          console.log('get cookie dashboard_config', dashboard_config);
+
+          $.get(this.settings.apiUrl + 'config', function (data) {
+              console.log('get api dashboard_config', data);
+          })
+
             var self = this;
             var width = $(window).width();
 
@@ -407,6 +428,11 @@
             self._grid = this.$grid.data('gridstack');
 
             self.setGridConfiguration(self._configurations[properViewport]);
+
+            var cv_info = 'Set Config: ' + self._currentViewport.stack + ' -> ' + self._currentViewport.range.from + 'x' + self._currentViewport.range.to;
+            $.notify(cv_info, 'info');
+
+
         },
 
         listenForResolutionChange: function () {

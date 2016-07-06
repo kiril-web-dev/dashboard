@@ -5,7 +5,7 @@ var
 	session = require('express-session'),
 	app = express();
 
-app.use(cors());	
+app.use(cors());
 
 app.use(express.static(__dirname + '/../client'));
 
@@ -54,6 +54,17 @@ app.post('/dashboard/profile/logout', function (req, res) {
 	res.json({ login: false });
 });
 
+// config set
+app.post('/dashboard/config', function (req, res) {
+	req.session.dashboard_config = req;
+	res.json({ success: true });
+});
+
+// config get
+app.get('/dashboard/config', function (req, res) {
+	res.json({ dashboard_config: req.session.dashboard_config });
+});
+
 app.listen(3333, function () {
-	console.log('\nDashboard Server\n');
+	console.log('\nDashboard Server: localhost:3333\n');
 });
